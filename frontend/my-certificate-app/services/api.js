@@ -21,8 +21,7 @@ const api = {
       console.log("payload data", payload);
       const res = await fetch(`${BASE_URL}/${endpoint}`, {
         method: 'POST',
-        body:payload,
-        credentials: 'include',
+        body:payload
       });
       return await res.json();
     } catch (err) {

@@ -1,9 +1,18 @@
 import styles from "./uploadPage.module.css";
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import apiService from "../../../services/apiService";
+import socket from "../../../Socket/connection";
 export default function UploadPage() {
     const [excelFile, setExcelFile] = useState(null);
-    const [templateFile, setTemplateFile] = useState(null);
+  const [templateFile, setTemplateFile] = useState(null);
+    const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    socket.on("output", (message) => {
+      console.log("message", message);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  }, []);
 
   const handleSubmit = async (e) => {
       e.preventDefault();
@@ -51,6 +60,21 @@ export default function UploadPage() {
           Upload Files
         </button>
       </form>
+
+      <div className={styles.messageContainer}>
+        <h2 className={styles.messageTitle}>Generated Certificates:</h2>
+        <ul className={styles.messageList}>
+          {messages.map((msg, index) => (
+            <li key={index} className={styles.messageItem}>
+              <strong>{msg.name}</strong>:{" "}
+              <a href={msg.link} target="_blank" rel="noopener noreferrer">
+                Download Certificate
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
+

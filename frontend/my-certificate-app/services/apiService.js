@@ -3,7 +3,8 @@ import api from './api';
 const apiService = {
 
   uploadFile: async (excelData) => { 
-    return await api.post('upload', excelData);
+    const response = await api.post('upload', excelData);
+    console.log(response);
   },
 
 };
