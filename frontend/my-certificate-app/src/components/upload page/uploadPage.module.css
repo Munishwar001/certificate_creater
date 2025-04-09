@@ -129,3 +129,12 @@
 .messageItem a:hover {
     color: #388e3c;
 }
+.buttonGroup {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+}
+
+.previewContainer {
+    margin-top: 20px;
+}

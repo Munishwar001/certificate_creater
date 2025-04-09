@@ -2,11 +2,13 @@ import styles from "./uploadPage.module.css";
 import { useState ,useEffect} from "react";
 import apiService from "../../../services/apiService";
 import socket from "../../../Socket/connection";
+import { FaEye } from "react-icons/fa";
 export default function UploadPage() {
     const [excelFile, setExcelFile] = useState(null);
-  const [templateFile, setTemplateFile] = useState(null);
+    const [templateFile, setTemplateFile] = useState(null);
     const [messages, setMessages] = useState([]);
-
+    const [previewLink, setPreviewLink] = useState(null);
+ 
   useEffect(() => {
     socket.on("output", (message) => {
       console.log("message", message);
@@ -19,12 +21,17 @@ export default function UploadPage() {
       const formData = new FormData();
       formData.append('excelFile', excelFile);
       formData.append("templateFile", templateFile);
+      formData.append("socket",socket.id);
       console.log(formData);
       await apiService.uploadFile(formData);
       console.log("Files to upload:", formData);
-      alert("request sended");
   };
-
+  const handleDownload =  async (link,name) => {
+    const endpoint = new URL(link).pathname;
+    console.log(endpoint);
+    await apiService.download(endpoint,name);
+    
+ }
   return (
     <div className={`${styles.container} ${styles.uploadContainer}`}>
       <h1 className={styles.title}>File Upload</h1>
@@ -62,18 +69,33 @@ export default function UploadPage() {
       </form>
 
       <div className={styles.messageContainer}>
-        <h2 className={styles.messageTitle}>Generated Certificates:</h2>
+        <h2 className={styles.messageTitle}>Generated :</h2>
         <ul className={styles.messageList}>
           {messages.map((msg, index) => (
             <li key={index} className={styles.messageItem}>
-              <strong>{msg.name}</strong>:{" "}
-              <a href={msg.link} target="_blank" rel="noopener noreferrer">
-                Download Certificate
-              </a>
+              <strong>{msg.name + "  "}</strong>
+              <button onClick={() => setPreviewLink(msg.link)}>
+                <FaEye />
+              </button>
+              <button onClick={() => handleDownload(msg.link,msg.name)}>
+                Download
+              </button>
             </li>
           ))}
         </ul>
       </div>
+      {previewLink && (
+        <div className={styles.previewContainer}>
+          <h3>PDF Preview</h3>
+          <iframe
+            src={previewLink}
+            width="100%"
+            height="600px"
+            style={{ border: "1px solid #ccc", borderRadius: "8px" }}
+            title="Certificate Preview"
+          />
+        </div>
+      )}
     </div>
   );
 }
