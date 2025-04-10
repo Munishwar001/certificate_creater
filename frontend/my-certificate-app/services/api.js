@@ -1,12 +1,24 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 import { toast } from 'react-toastify';
 const api = {
-  get: async (endpoint) => {
-        try {
-            console.log(`${BASE_URL}${endpoint}`);
-      const res = await fetch(`${BASE_URL}${endpoint}`);
-        
+  getBlob: async (endpoint) => {
+      try {
+      console.log(`${BASE_URL}${endpoint}`);
+        const res = await fetch(`${BASE_URL}${endpoint}`);
+      if (!res.ok) throw new Error(`GET ${endpoint} failed`);    
       return await res.blob();
+    } catch (err) {
+      console.error("GET Error:", err);
+      throw err;
+    }
+  },
+ 
+  getJson: async (endpoint) => {
+      try{
+      console.log(`${BASE_URL}${endpoint}`);
+      const res = await fetch(`${BASE_URL}${endpoint}`);
+      if (!res.ok) throw new Error(`GET ${endpoint} failed`);    
+      return await res.json();
     } catch (err) {
       console.error("GET Error:", err);
       throw err;
@@ -20,11 +32,9 @@ const api = {
       console.log("payload data", payload);
       const res = await fetch(`${BASE_URL}${endpoint}`, {
         method: 'POST',
-        body:payload
+        body: payload
       });
-      if (res.status == 200) {
-        toast.info("Generation Complete");
-      }
+
       return await res.json();
     } catch (err) {
       console.error("POST Error:", err);
